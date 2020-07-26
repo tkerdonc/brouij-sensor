@@ -39,8 +39,5 @@ sensor = MAX6675.MAX6675(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
 while running:
     temp = sensor.readTempC()
-    print ('Thermocouple Temperature: {0:0.3F}°'.format (temp))
-    c.gauge('temperature.%s.mash' % ( conf["current_beer"],), temp)
+    c.gauge('temperature.%s.test' % ( conf["current_beer"],), temp)
     time.sleep(5.0)
-    
-c.gauge('temperature.%s.mash' % ( conf["current_beer"],), None)

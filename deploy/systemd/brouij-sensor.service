@@ -1,0 +1,10 @@
+[Unit]
+Description=Brouij temperature sensor
+Wants=network.target
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+WorkingDirectory=/home/pi/src/brouij-sensor
+ExecStart=/home/pi/src/brouij-sensor/brouij-sensor.py
