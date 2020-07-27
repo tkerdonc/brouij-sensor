@@ -8,3 +8,4 @@ WantedBy=multi-user.target
 [Service]
 WorkingDirectory=/home/pi/src/brouij-sensor
 ExecStart=/home/pi/src/brouij-sensor/brouij-sensor.py
+Restart=always
