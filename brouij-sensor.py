@@ -4,9 +4,10 @@
 import json
 import os
 import signal
-import statsd
 import time
+from datetime import datetime
 
+from influxdb import InfluxDBClient
 import Adafruit_GPIO.SPI as SPI
 import MAX6675.MAX6675 as MAX6675
 
@@ -30,14 +31,29 @@ conf_path = os.environ.get("SENSOR_CONF") or "./conf.json"
 
 conf = json.load(open(conf_path))
 
-c = statsd.StatsClient(
-        conf["graphite_server"],
-        8125)
 
+client = InfluxDBClient(host=conf['server_host'],
+                        database="brewing",
+                        use_udp=True,
+                        udp_port=conf['server_port'])
 
 sensor = MAX6675.MAX6675(spi=SPI.SpiDev(SPI_PORT, SPI_DEVICE))
 
 while running:
     temp = sensor.readTempC()
-    c.gauge('temperature.%s.test' % ( conf["current_beer"],), temp)
+    json_body = {
+        "tags": {
+            "beer": conf["current_beer"],
+            "phase": conf["current_phase"],
+        },
+        "points": [{
+            "measurement": "temperature",
+            "fields": {
+                "value": temp,
+            },
+            "time": datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
+        }]
+    }
+
+    client.send_packet(json_body)
     time.sleep(5.0)
